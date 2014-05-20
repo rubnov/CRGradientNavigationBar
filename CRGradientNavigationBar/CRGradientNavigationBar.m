@@ -17,7 +17,7 @@
 
 @implementation CRGradientNavigationBar
 
-static CGFloat const kDefaultOpacity = 0.5f;
+static CGFloat const kDefaultOpacity = 0.75f;
 
 - (void)setBarTintGradientColors:(NSArray *)barTintGradientColors
 {
@@ -52,18 +52,14 @@ static CGFloat const kDefaultOpacity = 0.5f;
             }
         }];
         
+        [self setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+        self.shadowImage = [UIImage new];
+
         // make it possible for the graident to be seen for iOS 6 and iOS 7
         if ( [self respondsToSelector:@selector(setBarTintColor:)] )
         {
             // iOS 7
             self.barTintColor = [UIColor clearColor];
-        }
-        else
-        {
-            // iOS 6
-            self.tintColor = [UIColor clearColor];
-            // stops the gradient on iOS 6 UINavigationBar
-            [self setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
         }
     }
     
@@ -92,9 +88,21 @@ static CGFloat const kDefaultOpacity = 0.5f;
             self.gradientLayer.frame = CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds));
         }
         
+        for (CALayer *l in self.layer.sublayers) {
+            l.backgroundColor = [UIColor clearColor].CGColor;
+        }
         // make sure the graident layer is at position 1
         [self.layer insertSublayer:self.gradientLayer atIndex:1];
     }
+}
+
+
+#pragma mark - UINavigationBar
+
+- (void) setTranslucent:(BOOL)translucent
+{
+    [super setTranslucent:translucent];
+    self.gradientLayer.opacity = translucent ? kDefaultOpacity : 1.0f;
 }
 
 @end
